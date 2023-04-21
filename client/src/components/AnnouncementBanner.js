@@ -1,8 +1,11 @@
 import React from "react";
-import Alert from "react-bootstrap/Alert";
 
 const AnnouncementBanner = () => {
-  return <Alert className="mb-0 ">Free shipping on orders over $50!</Alert>;
+  return (
+    <div className="announcement" style={{ textAlign: "center" }}>
+      <text>Free shipping for order over $59!</text>
+    </div>
+  );
 };
 
 export default AnnouncementBanner;
