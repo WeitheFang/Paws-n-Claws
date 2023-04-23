@@ -94,4 +94,57 @@ const resolvers = {
       return { session: session.id }; // return an object containing the ID of the newly created Stripe checkout session
     },
   },
+  Mutation: {
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
+      const token = signToken(user);
+
+      return { token, user };
+    },
+    addOrder: async (parent, { products }, context) => {
+      if (context.user) {
+        const order = new Order({ products });
+
+        await User.findByIdAndUpdate(context.user._id, {
+          $push: { orders: order },
+        });
+
+        return order;
+      }
+
+      throw new AuthorizationError("You need to be logged in!");
+    },
+    updateUser: async (parent, args, context) => {
+      if (context.user) {
+        return User.findByIdAndUpdate(context.user._id, args, { new: true });
+      }
+      throw new AuthorizationError("You need to be logged in!");
+    },
+    updateProduct: async (parent, { _id, quantity }) => {
+      const decrement = Math.abs(quantity) * -1;
+
+      return await Product.findByIdAndUpdate(
+        _id,
+        { $inc: { quantity: decrement } },
+        { new: true }
+      );
+    },
+    login: async (parent, { username, password }) => {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+
+      const token = signToken(user);
+
+      return { token, user };
+    },
+  },
 };

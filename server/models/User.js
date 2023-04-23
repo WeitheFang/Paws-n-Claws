@@ -36,6 +36,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // compare the incoming password with the hashed password
+// this is a custom instance method that will be available on any User document
 userSchema.methods.isCorrectPassword = async function (password) {
   return bcrypt.compare(password, this.password);
 };
