@@ -22,7 +22,7 @@ class AuthService {
   getProfile() {
     return decoded(this.getToken());
   }
-  loggedIn(idToken) {
+  login(idToken) {
     localStorage.setItem("id_token", idToken);
     window.location.assign("/");
   }
